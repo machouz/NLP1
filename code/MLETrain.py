@@ -8,7 +8,7 @@ def QMLE(fname):
     Q_unigram = {}
 
     for line in train:
-        line = map(lambda x: x[1], line)
+        line = map(lambda x: x[1], line)  # Get the only the tags
         for a, b, c in zip(line, line[1:], line[2:]):
             Q_unigram[a] = Q_unigram.get(a, 0) + 1
             Q_bigram[a + " " + b] = Q_bigram.get(a + " " + b, 0) + 1
@@ -34,4 +34,4 @@ def qFile(fname):
     return data
 
 
-a, b, c = QMLE("../data/ass1-tagger-train")
+data = qFile("../data/ass1-tagger-train")
