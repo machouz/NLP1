@@ -1,5 +1,12 @@
 from utils import *
 
+gamma1 = 0.5
+gamma2 = 0.3
+gamma3 = 0.2
+
+Q_trigram = {}
+Q_bigram = {}
+Q_unigram = {}
 
 def QMLE(fname):
     train = read_data(fname)
@@ -21,8 +28,7 @@ def QMLE(fname):
     return Q_unigram, Q_bigram, Q_trigram
 
 
-def qFile(fname):
-    Q_unigram, Q_bigram, Q_trigram = QMLE(fname)
+def qFile():
     data = []
     for key, label in Q_unigram.items():
         data.append(key + "\t" + str(label))
@@ -33,5 +39,13 @@ def qFile(fname):
     write_to_file("q.mle", data)
     return data
 
+def getQ(t1,t2,t3):
+    tri = gamma1 * Q_trigram[t1 + " " + t2 + " " + t3]/ Q_bigram[t1 + " " + t2]
+    bi = gamma2 * Q_bigram[t2 + " " + t3]/ Q_unigram[t2]
+    uni = gamma3 * Q_unigram[t3] / sum(Q_unigram.values())
+    return  tri + bi + uni
 
-data = qFile("../data/ass1-tagger-train")
+
+if __name__ == '__main__':
+    Q_unigram, Q_bigram, Q_trigram = QMLE("../data/ass1-tagger-train")
+    data = QMLE()
