@@ -8,6 +8,8 @@ Q_trigram = {}
 Q_bigram = {}
 Q_unigram = {}
 
+len_vocabulary = 0
+
 def QMLE(fname):
     train = read_data(fname)
     Q_trigram = {}
@@ -40,12 +42,15 @@ def qFile():
     return data
 
 def getQ(t1,t2,t3):
-    tri = gamma1 * Q_trigram[t1 + " " + t2 + " " + t3]/ Q_bigram[t1 + " " + t2]
-    bi = gamma2 * Q_bigram[t2 + " " + t3]/ Q_unigram[t2]
-    uni = gamma3 * Q_unigram[t3] / sum(Q_unigram.values())
+    tri = gamma1 * Q_trigram[t1 + " " + t2 + " " + t3] / Q_bigram[t1 + " " + t2]
+    bi = gamma2 * Q_bigram[t2 + " " + t3] / Q_unigram[t2]
+    uni = gamma3 * Q_unigram[t3] / len_vocabulary
     return  tri + bi + uni
 
 
+Q_unigram, Q_bigram, Q_trigram = QMLE("../data/ass1-tagger-train")
+len_vocabulary = sum(Q_unigram.values())
+
+
 if __name__ == '__main__':
-    Q_unigram, Q_bigram, Q_trigram = QMLE("../data/ass1-tagger-train")
-    data = QMLE()
+    data = qFile()
