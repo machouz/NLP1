@@ -1,12 +1,13 @@
 from utils import *
 
 gamma1 = 0.5
-gamma2 = 0.3
-gamma3 = 0.2
+gamma2 = 0.4
+gamma3 = 0.1
 
 Q_trigram = {}
 Q_bigram = {}
 Q_unigram = {}
+E_probs = {}
 
 len_vocabulary = 0
 
@@ -42,15 +43,41 @@ def qFile():
     return data
 
 def getQ(t1,t2,t3):
-    tri = gamma1 * Q_trigram[t1 + " " + t2 + " " + t3] / Q_bigram[t1 + " " + t2]
-    bi = gamma2 * Q_bigram[t2 + " " + t3] / Q_unigram[t2]
-    uni = gamma3 * Q_unigram[t3] / len_vocabulary
+    tri = 0
+    bi = 0
+    if t1 + " " + t2 in Q_bigram:
+        tri = gamma1 * Q_trigram.get(t1 + " " + t2 + " " + t3, 0) / Q_bigram.get(t1 + " " + t2)
+
+    if t2 in Q_unigram:
+        bi = gamma2 * Q_bigram.get(t2 + " " + t3, 0) / Q_unigram.get(t2, 0)
+
+    uni = gamma3 * Q_unigram.get(t3, 0) / len_vocabulary
     return  tri + bi + uni
+
+def EMLE(fname):
+    train = read_data(fname)
+    for line in train:
+        for word, tag in line:
+            E_probs[word + " " + tag] = E_probs.get(word + " " + tag, 0) + 1
+
+
+def eFile():
+    data = []
+    for key, label in E_probs.items():
+        data.append(key + "\t" + str(label))
+    write_to_file("e.mle", data)
+    return data
 
 
 Q_unigram, Q_bigram, Q_trigram = QMLE("../data/ass1-tagger-train")
-len_vocabulary = sum(Q_unigram.values())
+len_vocabulary = sum(Q_unigram.itervalues())
+
+EMLE("../data/ass1-tagger-train")
 
 
+
+'''
 if __name__ == '__main__':
-    data = qFile()
+    q_data = qFile()
+    e_data = eFile()
+'''
