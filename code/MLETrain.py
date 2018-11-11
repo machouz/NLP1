@@ -1,9 +1,14 @@
 from utils import *
 import re
+from datetime import datetime
+
+start = datetime.now()
 
 gamma1 = 0.5
 gamma2 = 0.4
 gamma3 = 0.1
+
+threshold_unk = 3
 
 Q_trigram = {}
 Q_bigram = {}
@@ -11,11 +16,17 @@ Q_unigram = {}
 E_probs = {}
 
 len_vocabulary = 0
+
+fname = "../data/ass1-tagger-train"
+
 # Dictionary that give a compiled regex for each signature
-signatures_regex = {"ed": re.compile("\w+ed$"),
-                    "ing": re.compile("\w+ing$"),
-                    "ent": re.compile("\w+ent$"),
+signatures_regex = {"^ed": re.compile("\w+ed$"),
+                    "^s": re.compile("\w+s$"),
+                    "^ing": re.compile("\w+ing$"),
+                    "^ent": re.compile("\w+ent$"),
                     "^Aa": re.compile("[A-Z][a-z]+"),
+                    "^ion": re.compile("\w+ion$"),
+                    "^ity": re.compile("\w+ity$"),
                     }
 
 
@@ -26,36 +37,42 @@ def replace_signature(word):
     return word
 
 
-def QMLE(fname):
+def MLE():
     train = read_data(fname)
-    Q_trigram = {}
-    Q_bigram = {}
-    Q_unigram = {}
 
     for line in train:
-        line = map(lambda x: x[1], line)  # Get the only the tags
         for a, b, c in zip(line, line[1:], line[2:]):
-            Q_unigram[a] = Q_unigram.get(a, 0) + 1
-            Q_bigram[a + " " + b] = Q_bigram.get(a + " " + b, 0) + 1
-            Q_trigram[a + " " + b + " " + c] = Q_trigram.get(a + " " + b + " " + c, 0) + 1
+            tag1, tag2, tag3 = a[1], b[1], c[1]
+            addQLine(tag1, tag2, tag3)
+            addELine(a)
 
-        Q_bigram[b + " " + c] = Q_bigram.get(b + " " + c, 0) + 1
-        Q_unigram[b] = Q_unigram.get(b, 0) + 1
-        Q_unigram[c] = Q_unigram.get(c, 0) + 1
+        Q_bigram[tag2 + " " + tag3] = Q_bigram.get(tag2 + " " + tag3, 0) + 1
+        Q_unigram[tag2] = Q_unigram.get(tag2, 0) + 1
+        Q_unigram[tag3] = Q_unigram.get(tag3, 0) + 1
+        addELine(b)
+        addELine(c)
 
-    return Q_unigram, Q_bigram, Q_trigram
+
+    for sample, count in E_probs.items():
+        word, tag = sample.split(" ")
+        if count <= threshold_unk:
+            sign = replace_signature(word)
+            del E_probs[sample]
+            if sign != word:
+                E_probs[sign + " " + tag] = E_probs.get(sign + " " + tag, 0) + count
+            else:
+                E_probs["*UNK*" + " " + tag] = E_probs.get("*UNK*" + " " + tag, 0) + count
 
 
-def qFile():
-    data = []
-    for key, label in Q_unigram.items():
-        data.append(key + "\t" + str(label))
-    for key, label in Q_bigram.items():
-        data.append(key + "\t" + str(label))
-    for key, label in Q_trigram.items():
-        data.append(key + "\t" + str(label))
-    write_to_file("q.mle", data)
-    return data
+
+def addQLine(a, b, c):
+    Q_unigram[a] = Q_unigram.get(a, 0) + 1
+    Q_bigram[a + " " + b] = Q_bigram.get(a + " " + b, 0) + 1
+    Q_trigram[a + " " + b + " " + c] = Q_trigram.get(a + " " + b + " " + c, 0) + 1
+
+def addELine(x):
+    word, tag = x
+    E_probs[word + " " + tag] = E_probs.get(word + " " + tag, 0) + 1
 
 
 def getQ(t1, t2, t3):
@@ -71,12 +88,31 @@ def getQ(t1, t2, t3):
     return tri + bi + uni
 
 
-def EMLE(fname):
+def getE(word, tag):
+    sign = replace_signature(word)
+    if sign in E_probs:
+        return E_probs[sign + " " + tag] / len_vocabulary
+    return E_probs["*UNK*" + " " + tag] / len_vocabulary
+
+'''
+def EMLE(word, tag):
     train = read_data(fname)
     for line in train:
         for word, tag in line:
             word = replace_signature(word)  # will map all the word with the same signature to the same key of E_probs
             E_probs[word + " " + tag] = E_probs.get(word + " " + tag, 0) + 1
+'''
+
+def qFile():
+    data = []
+    for key, label in Q_unigram.items():
+        data.append(key + "\t" + str(label))
+    for key, label in Q_bigram.items():
+        data.append(key + "\t" + str(label))
+    for key, label in Q_trigram.items():
+        data.append(key + "\t" + str(label))
+    write_to_file("q.mle", data)
+    return data
 
 
 def eFile():
@@ -87,13 +123,13 @@ def eFile():
     return data
 
 
-Q_unigram, Q_bigram, Q_trigram = QMLE("../data/ass1-tagger-train")
+MLE()
 len_vocabulary = sum(Q_unigram.itervalues())
 
-EMLE("../data/ass1-tagger-train")
-
-'''
 if __name__ == '__main__':
     q_data = qFile()
     e_data = eFile()
-'''
+
+    end = datetime.now()
+    zman = end - start
+    print(zman)
