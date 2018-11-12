@@ -90,18 +90,10 @@ def getQ(t1, t2, t3):
 
 def getE(word, tag):
     sign = replace_signature(word)
-    if sign in E_probs:
-        return E_probs[sign + " " + tag] / Q_unigram[tag]
-    return E_probs["*UNK*" + " " + tag] / Q_unigram[tag]
+    if sign + " " + tag in E_probs:
+        return float(E_probs[sign + " " + tag]) / Q_unigram[tag]
+    return E_probs.get("*UNK*" + " " + tag, 0.0) / Q_unigram[tag]
 
-'''
-def EMLE(word, tag):
-    train = read_data(fname)
-    for line in train:
-        for word, tag in line:
-            word = replace_signature(word)  # will map all the word with the same signature to the same key of E_probs
-            E_probs[word + " " + tag] = E_probs.get(word + " " + tag, 0) + 1
-'''
 
 def qFile():
     data = []
