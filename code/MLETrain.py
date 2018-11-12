@@ -91,8 +91,8 @@ def getQ(t1, t2, t3):
 def getE(word, tag):
     sign = replace_signature(word)
     if sign in E_probs:
-        return E_probs[sign + " " + tag] / len_vocabulary
-    return E_probs["*UNK*" + " " + tag] / len_vocabulary
+        return E_probs[sign + " " + tag] / Q_unigram[tag]
+    return E_probs["*UNK*" + " " + tag] / Q_unigram[tag]
 
 '''
 def EMLE(word, tag):
