@@ -3,11 +3,11 @@ import re
 
 # Dictionary that give a compiled regex for each signature
 signatures_regex = {"^ed": re.compile("\w+ed$"),
-                    "^s": re.compile("\w+s$"),
+                    #"^s": re.compile("\w+s$"),
                     "^ing": re.compile("\w+ing$"),
-                    "^ent": re.compile("\w+ent$"),
-                    "^Aa": re.compile("[A-Z][a-z]+"),
-                    "^ion": re.compile("\w+ion$"),
+                    #"^ent": re.compile("\w+ent$"),
+                    #"^Aa": re.compile("[A-Z][a-z]+"),
+                    #"^ion": re.compile("\w+ion$"),
                     "^ity": re.compile("\w+ity$"),
                     }
 
@@ -25,12 +25,24 @@ class Estimator:
     tag_unigram = {}
     word_tag = {}
 
-    def __init__(self, gamma1=None, gamma2=None, gamma3=None):
+    def __init__(self, gamma1=0.3, gamma2=0.3, gamma3=0.4):
         self.gamma1 = gamma1
         self.gamma2 = gamma2
         self.gamma3 = gamma3
 
-    def unknown_signature(self, threshold_unk):
+    def load_from_file(self, q_file, e_file):
+        self.word_tag = file_to_dic(e_file)
+        for line in file(q_file):
+            key, value = line[:-1].split('\t')
+            gram = key.split()
+            if len(gram) == 3:
+                self.tag_trigram[key] = int(value)
+            elif len(gram) == 2:
+                self.tag_bigram[key] = int(value)
+            else:
+                self.tag_unigram[key] = int(value)
+
+    def unknown_signature(self, threshold_unk=1):
         for sample, count in self.word_tag.items():
             word, tag = sample.split(" ")
             if count <= threshold_unk:

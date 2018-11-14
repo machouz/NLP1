@@ -3,10 +3,6 @@ from datetime import datetime
 
 start = datetime.now()
 
-gamma1 = 0.3
-gamma2 = 0.3
-gamma3 = 0.4
-
 threshold_unk = 1
 
 fname = "../data/ass1-tagger-train"
