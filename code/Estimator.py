@@ -1,6 +1,5 @@
 from utils import *
 import re
-from datetime import datetime
 
 # Dictionary that give a compiled regex for each signature
 signatures_regex = {"^ed": re.compile("\w+ed$"),
