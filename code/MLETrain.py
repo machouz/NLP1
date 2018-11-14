@@ -4,11 +4,11 @@ from datetime import datetime
 
 start = datetime.now()
 
-gamma1 = 0.5
-gamma2 = 0.4
-gamma3 = 0.1
+gamma1 = 0.3
+gamma2 = 0.3
+gamma3 = 0.4
 
-threshold_unk = 3
+threshold_unk = 1
 
 Q_trigram = {}
 Q_bigram = {}
@@ -118,10 +118,10 @@ def eFile():
 MLE()
 len_vocabulary = sum(Q_unigram.itervalues())
 
-if __name__ == '__main__':
-    q_data = qFile()
-    e_data = eFile()
+#if __name__ == '__main__':
+q_data = qFile()
+e_data = eFile()
 
-    end = datetime.now()
-    zman = end - start
-    print(zman)
+end = datetime.now()
+zman = end - start
+print(zman)
