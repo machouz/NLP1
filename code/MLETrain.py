@@ -2,9 +2,9 @@ from Estimator import *
 
 start = datetime.now()
 
-gamma1 = 0.5
-gamma2 = 0.4
-gamma3 = 0.1
+gamma1 = 0.3
+gamma2 = 0.3
+gamma3 = 0.4
 
 threshold_unk = 1
 
