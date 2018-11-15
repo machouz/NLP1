@@ -24,7 +24,7 @@ def MLETrain():
         estimator.addELine(b)
         estimator.addELine(c)
 
-    estimator.unknown_signature(threshold_unk)
+    estimator.unknown_signature()
 
 
 if __name__ == '__main__':

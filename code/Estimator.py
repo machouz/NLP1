@@ -45,7 +45,7 @@ class Estimator:
                 self.tag_unigram[key] = int(value)
         self.num_words = sum(self.tag_unigram.itervalues())
 
-    def unknown_signature(self, threshold_unk=1):
+    def unknown_signature(self, threshold_unk=3):
         for sample, count in self.word_tag.items():
             word, tag = sample.split(" ")
             if count <= threshold_unk:
@@ -54,7 +54,8 @@ class Estimator:
                 if sign != word:
                     self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
                 else:
-                    self.word_tag["*UNK*" + " " + tag] = self.word_tag.get("*UNK*" + " " + tag, 0) + count
+                    if self.word_tag.get("*UNK*" + " " + tag, 0) < count:
+                        self.word_tag["*UNK*" + " " + tag] = count
 
     def get_best_tag(self, a, b, c):
         t1, t2 = a[1], b[1]
