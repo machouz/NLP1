@@ -8,6 +8,7 @@ signatures_regex = {"^ed": re.compile("\w+ed$"),
                     #"^ent": re.compile("\w+ent$"),
                     #"^Aa": re.compile("[A-Z][a-z]+"),
                     #"^ion": re.compile("\w+ion$"),
+                    "able" : re.compile("\w+able$"),
                     "^ity": re.compile("\w+ity$"),
                     }
 

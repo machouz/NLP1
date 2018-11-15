@@ -1,4 +1,7 @@
 from Estimator import *
+from datetime import datetime
+
+start = datetime.now()
 
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
@@ -7,6 +10,9 @@ e_file = "e.mle"
 data = []
 estimator = Estimator()
 estimator.load_from_file(q_file, e_file)
+
+load_time = datetime.now() - start
+print(load_time)
 
 for line in file(input_file):
     arr = [['***', 'STR'], ['***', 'STR']] + line[:-1].split()
@@ -31,3 +37,7 @@ for i in xrange(len(data)):
 words_num = sum(len(x) for x in data)
 acc = good / words_num
 print "Accuracy : " + str(acc)
+
+
+zman = datetime.now() - start
+print(zman)
