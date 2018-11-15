@@ -48,13 +48,14 @@ dic_label_str['STR'] = 1
 
 
 
-for sentence in data:
+for ind, sentence in enumerate(data):
+    print ind
     #sentence = data[0]
     Viterbi.append(dic_label_str)
     Viterbi.append(dic_label_str)
 
 
-    
+
     for i in xrange(2, len(sentence)):
         word_dic = dic_label.copy()
         possibilities_score = []

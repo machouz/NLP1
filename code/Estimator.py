@@ -3,11 +3,11 @@ import re
 
 # Dictionary that give a compiled regex for each signature
 signatures_regex = {"^ed": re.compile("\w+ed$"),
-                    #"^s": re.compile("\w+s$"),
+                    "^s": re.compile("\w+s$"),
                     "^ing": re.compile("\w+ing$"),
-                    #"^ent": re.compile("\w+ent$"),
-                    #"^Aa": re.compile("[A-Z][a-z]+"),
-                    #"^ion": re.compile("\w+ion$"),
+                    "^ent": re.compile("\w+ent$"),
+                    "^Aa": re.compile("[A-Z][a-z]+"),
+                    "^ion": re.compile("\w+ion$"),
                     "able" : re.compile("\w+able$"),
                     "^ity": re.compile("\w+ity$"),
                     }
@@ -60,6 +60,8 @@ class Estimator:
         t1, t2 = a[1], b[1]
         max_value = 0
         t3 = ""
+
+
         for x in self.tag_unigram:
             value = self.getQ(t1, t2, x) * self.getE(c, x)
             if value > max_value:

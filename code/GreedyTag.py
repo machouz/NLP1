@@ -28,12 +28,11 @@ for sentence in data:
 
 good = 0.0
 labels = read_data("../data/ass1-tagger-test")
-end = datetime.now()
-zman = end - start
-print(zman)
+
+
 
 for i in xrange(len(data)):
-    for word_p, word_l in zip(data[i], labels[i]):
+    for word_p, word_l in zip(data[i][2:], labels[i][2:]):
         if word_p[1] == word_l[1]:
             good += 1
 
