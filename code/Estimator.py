@@ -8,10 +8,10 @@ signatures_regex = {"^ed": re.compile("\w+ed$"),
                     "^ent": re.compile("\w+ent$"),
                     "^Aa": re.compile("[A-Z][a-z]+"),
                     "^ion": re.compile("\w+ion$"),
-                    "able" : re.compile("\w+able$"),
+                    "able": re.compile("\w+able$"),
                     "^ity": re.compile("\w+ity$"),
-                    "^0-9" : re.compile('\d+'),
-                    "^A-Z" : re.compile("[A-Z]+")
+                    "^0-9": re.compile('\d+'),
+                    "^A-Z": re.compile("[A-Z]+")
                     }
 
 
@@ -50,20 +50,17 @@ class Estimator:
     def unknown_signature(self, threshold_unk=3):
         for sample, count in self.word_tag.items():
             word, tag = sample.split(" ")
-            if count <= threshold_unk:
-                sign = replace_signature(word)
-                del self.word_tag[sample]
-                if sign != word:
-                    self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
-                else:
-                    if self.word_tag.get("*UNK*" + " " + tag, 0) < count:
-                        self.word_tag["*UNK*" + " " + tag] = count
+            sign = replace_signature(word)
+            if sign != word:
+                self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
+            else:
+                if count < self.word_tag.get("*UNK*" + " " + tag, 0) <= threshold_unk:
+                    self.word_tag["*UNK*" + " " + tag] = count
 
     def get_best_tag(self, a, b, c):
         t1, t2 = a[1], b[1]
         max_value = 0
         t3 = ""
-
 
         for x in self.tag_unigram:
             value = self.getQ(t1, t2, x) * self.getE(c, x)
