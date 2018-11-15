@@ -96,7 +96,7 @@ class Estimator:
         sign = replace_signature(word)
         if sign + " " + tag in self.word_tag:
             return float(self.word_tag[sign + " " + tag]) / self.tag_unigram[tag]
-        return self.word_tag.get("*UNK*" + " " + tag, 0) / self.tag_unigram[tag]
+        return float(self.word_tag.get("*UNK*" + " " + tag, 0)) / self.tag_unigram[tag]
 
     def qFile(self, ):
         data = []
