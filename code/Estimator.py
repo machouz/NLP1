@@ -10,6 +10,8 @@ signatures_regex = {"^ed": re.compile("\w+ed$"),
                     "^ion": re.compile("\w+ion$"),
                     "able" : re.compile("\w+able$"),
                     "^ity": re.compile("\w+ity$"),
+                    "^0-9" : re.compile('\d+'),
+                    "^A-Z" : re.compile("[A-Z]+")
                     }
 
 
