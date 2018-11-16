@@ -20,5 +20,5 @@ def file_to_dic(fname):
     data = {}
     for line in file(fname):
         key, label = line[:-1].split('\t')
-        data[key] = int(label)
+        data[key] = float(label)
     return data

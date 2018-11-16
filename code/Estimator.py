@@ -40,11 +40,11 @@ class Estimator:
             key, value = line[:-1].split('\t')
             gram = key.split()
             if len(gram) == 3:
-                self.tag_trigram[key] = int(value)
+                self.tag_trigram[key] = float(value)
             elif len(gram) == 2:
-                self.tag_bigram[key] = int(value)
+                self.tag_bigram[key] = float(value)
             else:
-                self.tag_unigram[key] = int(value)
+                self.tag_unigram[key] = float(value)
         self.num_words = sum(self.tag_unigram.itervalues())
 
     def unknown_signature(self, threshold_unk=3):
@@ -52,9 +52,9 @@ class Estimator:
             word, tag = sample.split(" ")
             sign = replace_signature(word)
             if sign != word:
-                self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
+                self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0.0) + count
             else:
-                if count < self.word_tag.get("*UNK*" + " " + tag, 0) <= threshold_unk:
+                if count < self.word_tag.get("*UNK*" + " " + tag, 0.0) <= threshold_unk:
                     self.word_tag["*UNK*" + " " + tag] = count
 
     def get_best_tag(self, a, b, c):
@@ -71,34 +71,34 @@ class Estimator:
 
     def addQLine(self, a, b, c=None):
         self.num_words += 1
-        self.tag_unigram[a] = self.tag_unigram.get(a, 0) + 1
-        self.tag_bigram[a + " " + b] = self.tag_bigram.get(a + " " + b, 0) + 1
+        self.tag_unigram[a] = self.tag_unigram.get(a, 0.0) + 1
+        self.tag_bigram[a + " " + b] = self.tag_bigram.get(a + " " + b, 0.0) + 1
         if c is None:
-            self.tag_unigram[b] = self.tag_unigram.get(b, 0) + 1
+            self.tag_unigram[b] = self.tag_unigram.get(b, 0.0) + 1
         else:
-            self.tag_trigram[a + " " + b + " " + c] = self.tag_trigram.get(a + " " + b + " " + c, 0) + 1
+            self.tag_trigram[a + " " + b + " " + c] = self.tag_trigram.get(a + " " + b + " " + c, 0.0) + 1
 
     def addELine(self, x):
         word, tag = x
-        self.word_tag[word + " " + tag] = self.word_tag.get(word + " " + tag, 0) + 1
+        self.word_tag[word + " " + tag] = self.word_tag.get(word + " " + tag, 0.0) + 1
 
     def getQ(self, t1, t2, t3):
         tri = 0
         bi = 0
         if t1 + " " + t2 in self.tag_bigram:
-            tri = self.gamma1 * self.tag_trigram.get(t1 + " " + t2 + " " + t3, 0) / self.tag_bigram.get(t1 + " " + t2)
+            tri = self.gamma1 * self.tag_trigram.get(t1 + " " + t2 + " " + t3, 0.0) / self.tag_bigram.get(t1 + " " + t2)
 
         if t2 in self.tag_unigram:
-            bi = self.gamma2 * self.tag_bigram.get(t2 + " " + t3, 0) / self.tag_unigram.get(t2, 0)
+            bi = self.gamma2 * self.tag_bigram.get(t2 + " " + t3, 0.0) / self.tag_unigram.get(t2, 0.0)
 
-        uni = self.gamma3 * self.tag_unigram.get(t3, 0) / self.num_words
+        uni = self.gamma3 * self.tag_unigram.get(t3, 0.0) / self.num_words
         return tri + bi + uni
 
     def getE(self, word, tag):
         sign = replace_signature(word)
         if sign + " " + tag in self.word_tag:
-            return float(self.word_tag[sign + " " + tag]) / self.tag_unigram[tag]
-        return float(self.word_tag.get("*UNK*" + " " + tag, 0)) / self.tag_unigram[tag]
+            return self.word_tag[sign + " " + tag]/ self.tag_unigram[tag]
+        return self.word_tag.get("*UNK*" + " " + tag, 0.0)/ self.tag_unigram[tag]
 
     def qFile(self, ):
         data = []
