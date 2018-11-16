@@ -7,7 +7,9 @@ start = datetime.now()
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
 e_file = "e.mle"
-treshold = 5
+treshold = 1
+
+print "The treshold is " + str(treshold)
 
 data = []
 estimator = Estimator()
@@ -35,7 +37,11 @@ def preprocessing():
 def getScore(word, index, tag, prev_tag, prev_prev_tag):
     V = Viterbi[index - 1][prev_tag] + Viterbi[index - 2][prev_prev_tag]
     a = np.log(estimator.getQ(prev_prev_tag, prev_tag, tag))
-    b = np.log(estimator.getE(word, tag))
+    b = estimator.getE(word, tag)
+    if b == 0:
+        b = -np.inf
+    else:
+        b = np.log(b)
 
     return  V + a + b
 
@@ -49,7 +55,8 @@ dic_label_str = dic_label.copy()
 dic_label_str['STR'] = 0
 
 
-for sentence in data[:1]:
+for ind, sentence in enumerate(data[:10]):
+    print ind
     Viterbi.append(dic_label_str)
     Viterbi.append(dic_label_str)
 
@@ -72,20 +79,21 @@ for sentence in data[:1]:
         Viterbi.append(word_dic)
 
 
-'''
+
 good = 0.0
+total = 0.0
 labels = read_data("../data/ass1-tagger-test")
 
 
-for i in xrange(len(data)):
+for i in xrange(len(data[:10])):
     for word_p, word_l in zip(data[i][2:], labels[i][2:]):
         if word_p[1] == word_l[1]:
             good += 1
+        total += 1
 
-words_num = sum(len(x) - 2 for x in data)
-acc = good / words_num
+acc = good / total
 print "Accuracy : " + str(acc)
 
 zman = datetime.now() - start
 print(zman)
-'''
+
