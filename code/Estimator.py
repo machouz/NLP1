@@ -7,7 +7,7 @@ signatures_regex = {"^ed": re.compile("\w+ed$"),
                     "^ing": re.compile("\w+ing$"),
                     "^ent": re.compile("\w+ent$"),
                     "^Aa": re.compile("[A-Z][a-z]+"),
-                    "^ion": re.compile("\w+ion$"),
+                    "^tion": re.compile("\w+tion$"),
                     "able": re.compile("\w+able$"),
                     "^ity": re.compile("\w+ity$"),
                     "^0-9": re.compile('\d+'),
@@ -28,8 +28,9 @@ class Estimator:
     tag_unigram = {}
     num_words = 0
     word_tag = {}
+    tag_unigram_events = {}
 
-    def __init__(self, gamma1=0.3, gamma2=0.3, gamma3=0.4):
+    def __init__(self, gamma1=0.3, gamma2=0.4, gamma3=0.3):
         self.gamma1 = gamma1
         self.gamma2 = gamma2
         self.gamma3 = gamma3
@@ -47,15 +48,28 @@ class Estimator:
                 self.tag_unigram[key] = int(value)
         self.num_words = sum(self.tag_unigram.itervalues())
 
-    def unknown_signature(self, threshold_unk=3):
+    def unknown_signature(self, threshold_unk=1):
         for sample, count in self.word_tag.items():
             word, tag = sample.split(" ")
-            sign = replace_signature(word)
-            if sign != word:
-                self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
-            else:
-                if count < self.word_tag.get("*UNK*" + " " + tag, 0) <= threshold_unk:
-                    self.word_tag["*UNK*" + " " + tag] = count
+            if count <= threshold_unk:
+                sign = replace_signature(word)
+                del self.word_tag[sample]
+                if sign != word:
+                    self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
+                else:
+                    self.word_tag["*UNK*" + " " + tag] = self.word_tag.get("*UNK*" + " " + tag, 0) + count
+
+
+        # for sample, count in self.word_tag.items():
+        #     word, tag = sample.split(" ")
+        #     sign = replace_signature(word)
+        #     if sign != word:
+        #         self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
+        #         self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
+        #     else:
+        #         if count <= threshold_unk:
+        #             self.word_tag["*UNK*" + " " + tag] = self.word_tag.get("*UNK*" + " " + tag, 0) + count
+        #             self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
 
     def get_best_tag(self, a, b, c):
         t1, t2 = a[1], b[1]
@@ -74,6 +88,7 @@ class Estimator:
         self.tag_bigram[a + " " + b] = self.tag_bigram.get(a + " " + b, 0) + 1
         if c is None:
             self.tag_unigram[b] = self.tag_unigram.get(b, 0) + 1
+
         else:
             self.tag_trigram[a + " " + b + " " + c] = self.tag_trigram.get(a + " " + b + " " + c, 0) + 1
 
@@ -97,8 +112,8 @@ class Estimator:
     def getE(self, word, tag):
         sign = replace_signature(word)
         if sign + " " + tag in self.word_tag:
-            return float(self.word_tag[sign + " " + tag]) / self.tag_unigram[tag]
-        return float(self.word_tag.get("*UNK*" + " " + tag, 0)) / self.tag_unigram[tag]
+            return float(self.word_tag[sign + " " + tag]) / (self.tag_unigram[tag] + self.tag_unigram_events.get(tag, 0))
+        return float(self.word_tag.get("*UNK*" + " " + tag, 0)) / (self.tag_unigram[tag] + self.tag_unigram_events.get(tag, 0))
 
     def qFile(self, ):
         data = []
