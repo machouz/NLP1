@@ -70,15 +70,15 @@ class Estimator:
         return t3
 
     def addQLine(self, a, b, c=None):
-        self.num_words += 1
-        self.tag_unigram[a] = self.tag_unigram.get(a, 0.0) + 1
-        self.tag_bigram[a + " " + b] = self.tag_bigram.get(a + " " + b, 0.0) + 1
+        self.tag_unigram[a] = self.tag_unigram.get(a, 0) + 1
+        self.tag_bigram[a + " " + b] = self.tag_bigram.get(a + " " + b, 0) + 1
         if c is None:
             self.tag_unigram[b] = self.tag_unigram.get(b, 0.0) + 1
         else:
             self.tag_trigram[a + " " + b + " " + c] = self.tag_trigram.get(a + " " + b + " " + c, 0.0) + 1
 
     def addELine(self, x):
+        self.num_words += 1
         word, tag = x
         self.word_tag[word + " " + tag] = self.word_tag.get(word + " " + tag, 0.0) + 1
 
