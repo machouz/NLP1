@@ -34,6 +34,7 @@ def preprocessing():
         dic[tag] = possible_bigrams
     return dic
 
+
 def getScore(word, index, tag, prev_tag, prev_prev_tag):
     V = Viterbi[index - 1][prev_tag] + Viterbi[index - 2][prev_prev_tag]
     a = np.log(estimator.getQ(prev_prev_tag, prev_tag, tag))
@@ -43,7 +44,7 @@ def getScore(word, index, tag, prev_tag, prev_prev_tag):
     else:
         b = np.log(b)
 
-    return  V + a + b
+    return V + a + b
 
 
 possibles_bigrams = preprocessing()
@@ -54,16 +55,13 @@ dic_label = {key: -np.inf for key in estimator.tag_unigram}
 dic_label_str = dic_label.copy()
 dic_label_str['STR'] = 0
 
-
 for ind, sentence in enumerate(data[:10]):
     print ind
     Viterbi.append(dic_label_str)
     Viterbi.append(dic_label_str)
 
-
     for i in xrange(2, len(sentence)):
         word_dic = dic_label.copy()
-        #possibilities_score = []
 
         for tag in word_dic:
             possibilities_score = []
@@ -78,12 +76,9 @@ for ind, sentence in enumerate(data[:10]):
 
         Viterbi.append(word_dic)
 
-
-
 good = 0.0
 total = 0.0
 labels = read_data("../data/ass1-tagger-test")
-
 
 for i in xrange(len(data[:10])):
     for word_p, word_l in zip(data[i][2:], labels[i][2:]):
@@ -96,4 +91,3 @@ print "Accuracy : " + str(acc)
 
 zman = datetime.now() - start
 print(zman)
-

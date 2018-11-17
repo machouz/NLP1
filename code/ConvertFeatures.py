@@ -16,17 +16,19 @@ def featureConvert(fname):
         line = line[:-1].split("\t")
 
         label = feat2id[line[0]]
-        vec = [label]
+        features = []
         for feature in line[1:]:
             if feature not in features_id:
-                features_id[feature] = str(i) + ":1"
+                features_id[feature] = i
                 i += 1
+            features.append(features_id[feature])
 
-            vec.append(features_id[feature])
-        data.append(vec)
+        features = map(lambda x: str(x) + ":1", sorted(features))
+
+        vec = [str(label)] + features
+        data.append(" ".join(vec))
 
     write_to_file(feature_vecs_file, data)
-
     return data
 
 
