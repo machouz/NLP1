@@ -1,6 +1,9 @@
 from utils import *
 from datetime import datetime
 
+fname = "../data/ass1-tagger-train"
+output_file = "features"
+
 
 def featureExtract(fname):
     train = read_data(fname)
@@ -44,8 +47,6 @@ def write_features_file(featured_data, output_file):
 
 if __name__ == '__main__':
     start = datetime.now()
-    fname = "../data/ass1-tagger-train"
-    output_file = "features"
     featured_data = featureExtract(fname)
     print(datetime.now() - start)
     write_features_file(featured_data, output_file)
