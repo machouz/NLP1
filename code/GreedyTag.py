@@ -6,13 +6,10 @@ start = datetime.now()
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
 e_file = "e.mle"
-from datetime import datetime
 
-start = datetime.now()
 data = []
 estimator = Estimator()
 estimator.load_from_file(q_file, e_file)
-
 
 for line in file(input_file):
     arr = [['***', 'STR'], ['***', 'STR']] + line[:-1].split()
@@ -29,10 +26,15 @@ total = 0.0
 labels = read_data("../data/ass1-tagger-test")
 
 
+
+error = []
+
 for i in xrange(len(data)):
     for word_p, word_l in zip(data[i][2:], labels[i][2:]):
         if word_p[1] == word_l[1]:
             good += 1
+        else:
+            error.append([i, word_l[0], word_l[1], word_p[1]])
         total += 1
 
 acc = good / total

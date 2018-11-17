@@ -1,7 +1,6 @@
 from Estimator import *
 from datetime import datetime
 
-start = datetime.now()
 
 threshold_unk = 1
 
@@ -12,7 +11,6 @@ estimator = Estimator()
 
 def MLETrain():
     train = read_data(fname)
-
     for line in train:
         for a, b, c in zip(line, line[1:], line[2:]):
             tag1, tag2, tag3 = a[1], b[1], c[1]
@@ -28,6 +26,7 @@ def MLETrain():
 
 
 if __name__ == '__main__':
+    start = datetime.now()
     MLETrain()
     q_data = estimator.qFile()
     e_data = estimator.eFile()
