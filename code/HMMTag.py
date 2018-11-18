@@ -7,7 +7,7 @@ start = datetime.now()
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
 e_file = "e.mle"
-treshold = 1
+treshold = 10
 
 print "The treshold is " + str(treshold)
 
@@ -34,21 +34,16 @@ def preprocessing():
         dic[tag] = possible_bigrams
     return dic
 
-def getScore(word, index, tag, prev_tag, prev_prev_tag):
+def getScore(word, index, tag, prev_tag, prev_prev_tag, emission):
     V = Viterbi[index - 1][prev_tag] + Viterbi[index - 2][prev_prev_tag]
     a = np.log(estimator.getQ(prev_prev_tag, prev_tag, tag))
-    b = estimator.getE(word, tag)
-    if b == 0:
-        b = -np.inf
-    else:
-        b = np.log(b)
+    b = -np.log(emission)
 
-    return  V + a + b, tag
+    return V + a + b
 
 
 possibles_bigrams = preprocessing()
 
-Viterbi = []
 
 dic_label = {key: -np.inf for key in estimator.tag_unigram}
 dic_label_str = dic_label.copy()
@@ -56,27 +51,49 @@ dic_label_str['STR'] = 0
 
 
 for ind, sentence in enumerate(data[:10]):
+    Viterbi = []
+    tags = []
+
     print ind
     Viterbi.append(dic_label_str)
     Viterbi.append(dic_label_str)
 
 
     for i in xrange(2, len(sentence)):
+        tags_dic = dic_label.copy()
         word_dic = dic_label.copy()
         possibilities_score = []
+        word = sentence[i]
 
         for tag in word_dic:
+            emission = estimator.getE(word, tag)
             possibilities_score = []
-            for prev_prev_tag, prev_tag in possibles_bigrams[tag]:
-                possibilities_score.append(getScore(sentence[i], i, tag, prev_tag, prev_prev_tag), tag)
+            if emission > 0.0:
+                for prev_prev_tag, prev_tag in possibles_bigrams[tag]:
+                    prob = getScore(word, i, tag, prev_tag, prev_prev_tag, emission)
+                    possibilities_score.append([prob, prev_tag])
 
             if len(possibilities_score) != 0:
-                word_dic[tag] = max(possibilities_score)
+                score, prev_tag = max(possibilities_score)
+                word_dic[tag] = score
+                tags_dic[tag] = prev_tag
 
-        tag_predict = max(word_dic, key=word_dic.get)
-        sentence[i] = [sentence[i], tag_predict]
 
         Viterbi.append(word_dic)
+        tags.append(tags_dic)
+
+    predict_last_tag = max(Viterbi[i].keys(), key=Viterbi[i].get)
+    sentence[i] = [sentence[i], predict_last_tag]
+    for j in xrange(i-1, 2, -1):
+        tag_j = tags[i - 2]
+    prev_prev, prev_tag = tags[i - 2][predict_last_tag]
+
+
+    #for j in range(len(sentence), 2, -1):
+    #    predict_tag = max(Viterbi[j - 1].keys(), key=Viterbi[j].get)
+    #    tag = predict_tag[1]
+
+
 
 
 

@@ -4,7 +4,7 @@ import re
 # Dictionary that give a compiled regex for each signature
 signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
                     ["^A-Z", re.compile("[A-Z]+$")],
-                    ["^Aa", re.compile(".[A-Z][a-z]+")],
+                    ["^Aa", re.compile("[A-Z][a-z]+")],
                     ["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
                     ["^ion", re.compile("\w+ion$")],
@@ -29,6 +29,7 @@ class Estimator:
     num_words = 0
     word_tag = {}
     tag_unigram_events = {}
+    vocabulary = {}
 
     def __init__(self, gamma1=0.1, gamma2=0.4, gamma3=0.5):
         self.gamma1 = gamma1
@@ -48,6 +49,7 @@ class Estimator:
                 self.tag_unigram[key] = int(value)
         self.num_words = sum(self.tag_unigram.itervalues())
 
+
     def unknown_signature(self, threshold_unk=1):
         for sample, count in self.word_tag.items():
             word, tag = sample.split(' ')
@@ -57,6 +59,9 @@ class Estimator:
                 self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
 
 
+        for tag in self.tag_unigram:
+            self.word_tag["*UNK*" + " " + tag] = 1
+            self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + 1
 
         '''
         for sample, count in self.word_tag.items():
@@ -106,6 +111,7 @@ class Estimator:
     def addELine(self, x):
         self.num_words += 1
         word, tag = x
+        self.vocabulary[word] = self.vocabulary.get(word, 0) + 1
         self.word_tag[word + " " + tag] = self.word_tag.get(word + " " + tag, 0) + 1
 
     def getQ(self, t1, t2, t3):
@@ -122,6 +128,9 @@ class Estimator:
         return tri + bi + uni
 
     def getE(self, word, tag):
+        if word in self.vocabulary:
+            return float(self.word_tag.get(word + " " + tag, 0)) / (self.tag_unigram[tag] + self.tag_unigram_events.get(tag, 0))
+
         sign = replace_signature(word)
         if sign + " " + tag in self.word_tag:
             return float(self.word_tag[sign + " " + tag]) / (self.tag_unigram[tag] + self.tag_unigram_events.get(tag, 0))
