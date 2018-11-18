@@ -2,9 +2,7 @@ from utils import *
 import re
 
 # Dictionary that give a compiled regex for each signature
-signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
-                    ["^A-Z", re.compile("[A-Z]+$")],
-                    ["^Aa", re.compile(".[A-Z][a-z]+")],
+signatures_regex = (["^0-9", re.compile('\d+\.\d+')],
                     ["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
                     ["^ion", re.compile("\w+ion$")],
@@ -12,6 +10,8 @@ signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
                     ["^able", re.compile("\w+able$")],
                     ["^ent", re.compile("\w+ent$")],
                     ["^s", re.compile("\w+s$")],
+                    ["^ly", re.compile("\w+ly$")],
+                    ["^A-Z", re.compile("[A-Z]+$")],
                     )
 
 
@@ -27,8 +27,8 @@ class Estimator:
     tag_bigram = {}
     tag_unigram = {}
     num_words = 0
-    word_tag = {}
     tag_unigram_events = {}
+    word_tag = {}
 
     def __init__(self, gamma1=0.1, gamma2=0.4, gamma3=0.5):
         self.gamma1 = gamma1
@@ -36,7 +36,17 @@ class Estimator:
         self.gamma3 = gamma3
 
     def load_from_file(self, q_file, e_file):
-        self.word_tag = file_to_dic(e_file)
+        self.word_tag = {}
+        self.tag_unigram_events = {}
+        for line in file(e_file):
+            key, count = line[:-1].split('\t')
+            word, tag = key.split(" ")
+            self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + 1
+            if word not in self.word_tag:
+                self.word_tag[word] = {}
+            self.word_tag[word][tag] = int(count)
+
+        self.num_words = 0
         for line in file(q_file):
             key, value = line[:-1].split('\t')
             gram = key.split()
@@ -45,43 +55,19 @@ class Estimator:
             elif len(gram) == 2:
                 self.tag_bigram[key] = int(value)
             else:
+                self.num_words += 1
                 self.tag_unigram[key] = int(value)
-        self.num_words = sum(self.tag_unigram.itervalues())
 
-    def unknown_signature(self, threshold_unk=1):
-        for sample, count in self.word_tag.items():
-            word, tag = sample.split(' ')
-            sign = replace_signature(word)
-            if sign != word:
-                self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
-                self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
-
-
-
-        '''
-        for sample, count in self.word_tag.items():
-            word, tag = sample.split(" ")
-            if count <= threshold_unk:
+    def unknown_signature(self, threshold_unk=0):
+        self.tag_unigram_events = self.tag_unigram
+        for word, dic in self.word_tag.items():
+            for tag, count in dic.items():
                 sign = replace_signature(word)
-                #del self.word_tag[sample]
                 if sign != word:
-                    self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
-                    self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
-                else:
-                    self.word_tag["*UNK*" + " " + tag] = self.word_tag.get("*UNK*" + " " + tag, 0) + count
-                    self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
-        '''
-
-        # for sample, count in self.word_tag.items():
-        #     word, tag = sample.split(" ")
-        #     sign = replace_signature(word)
-        #     if sign != word:
-        #         self.word_tag[sign + " " + tag] = self.word_tag.get(sign + " " + tag, 0) + count
-        #         self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
-        #     else:
-        #         if count <= threshold_unk:
-        #             self.word_tag["*UNK*" + " " + tag] = self.word_tag.get("*UNK*" + " " + tag, 0) + count
-        #             self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + count
+                    self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + 1
+                    if sign not in self.word_tag:
+                        self.word_tag[sign] = {}
+                    self.word_tag[sign][tag] = self.word_tag.get(sign + " " + tag, 0) + count
 
     def get_best_tag(self, a, b, c):
         t1, t2 = a[1], b[1]
@@ -103,33 +89,43 @@ class Estimator:
         else:
             self.tag_trigram[a + " " + b + " " + c] = self.tag_trigram.get(a + " " + b + " " + c, 0) + 1
 
-    def addELine(self, x):
-        self.num_words += 1
+    def addELine(self, x, dev=False):
         word, tag = x
-        self.word_tag[word + " " + tag] = self.word_tag.get(word + " " + tag, 0) + 1
+        if word not in self.word_tag:
+            if dev:
+                word = '*UNK*'
+            if word not in self.word_tag:
+                self.word_tag[word] = {}
+        if tag not in self.word_tag[word]:
+            self.word_tag[word][tag] = 0
+
+        self.num_words += 1
+        self.word_tag[word][tag] += 1
 
     def getQ(self, t1, t2, t3):
         tri = 0
         bi = 0
 
         if t1 + " " + t2 + " " + t3 in self.tag_trigram:
-            tri = self.gamma1 * self.tag_trigram.get(t1 + " " + t2 + " " + t3, 0) / self.tag_bigram.get(t1 + " " + t2)
+            tri = float(self.tag_trigram.get(t1 + " " + t2 + " " + t3, 0)) / self.tag_bigram.get(t1 + " " + t2, 0)
 
         if t2 + " " + t3 in self.tag_bigram:
-            bi = self.gamma2 * self.tag_bigram.get(t2 + " " + t3, 0) / self.tag_unigram.get(t2, 0)
+            bi = float(self.tag_bigram.get(t2 + " " + t3, 0)) / self.tag_unigram.get(t2, 0)
 
-        uni = self.gamma3 * self.tag_unigram.get(t3, 0) / self.num_words
-        return tri + bi + uni
+        uni = float(self.tag_unigram.get(t3, 0)) / self.num_words
+        return self.gamma1 * tri + self.gamma2 * bi + self.gamma3 * uni
 
     def getE(self, word, tag):
+        if word in self.word_tag:
+            return float(self.word_tag[word].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
+
         sign = replace_signature(word)
-        if sign + " " + tag in self.word_tag:
-            return float(self.word_tag[sign + " " + tag]) / (self.tag_unigram[tag] + self.tag_unigram_events.get(tag, 0))
-        return float(self.word_tag.get("*UNK*" + " " + tag, 0)) / self.tag_unigram[tag]
+        if sign in self.word_tag:
+            return float(self.word_tag[sign].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
+
+        return float(self.word_tag["*UNK*"].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
 
 
-    def getETemp(self, word, tag):
-        return float(self.word_tag.get(word + " " + tag, 0)) / self.tag_unigram[tag]
 
     def qFile(self, ):
         data = []
@@ -144,7 +140,8 @@ class Estimator:
 
     def eFile(self, ):
         data = []
-        for key, label in self.word_tag.items():
-            data.append(key + "\t" + str(label))
+        for word, dic in self.word_tag.items():
+            for tag, count in dic.items():
+                data.append(word + " " + tag + "\t" + str(count))
         write_to_file("e.mle", data)
         return data

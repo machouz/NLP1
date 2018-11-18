@@ -1,16 +1,18 @@
 from Estimator import *
 from datetime import datetime
 
-
 threshold_unk = 1
 
 fname = "../data/ass1-tagger-train"
 
 estimator = Estimator()
+file = read_data(fname)
+train = file[:int(len(file) * 0.9)]
+dev = file[len(train):]
+
 
 
 def MLETrain():
-    train = read_data(fname)
     for line in train:
         for a, b, c in zip(line, line[1:], line[2:]):
             tag1, tag2, tag3 = a[1], b[1], c[1]
@@ -22,7 +24,19 @@ def MLETrain():
         estimator.addELine(b)
         estimator.addELine(c)
 
+    for line in dev:
+        for a, b, c in zip(line, line[1:], line[2:]):
+            tag1, tag2, tag3 = a[1], b[1], c[1]
+            estimator.addQLine(tag1, tag2, tag3)
+            estimator.addELine(a, dev=True)
+
+        tag2, tag3 = b[1], c[1]
+        estimator.addQLine(tag2, tag3)
+        estimator.addELine(b, dev=True)
+        estimator.addELine(c, dev=True)
+
     estimator.unknown_signature()
+
 
 
 if __name__ == '__main__':
