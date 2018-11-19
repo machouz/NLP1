@@ -7,7 +7,7 @@ start = datetime.now()
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
 e_file = "e.mle"
-treshold = 10
+treshold = 1
 
 print "The treshold is " + str(treshold)
 
@@ -34,10 +34,17 @@ def preprocessing():
         dic[tag] = possible_bigrams
     return dic
 
-def getScore(word, index, tag, prev_tag, prev_prev_tag, emission):
+def getScore(word, index, tag, prev_tag, prev_prev_tag, emission=None):
     V = Viterbi[index - 1][prev_tag] + Viterbi[index - 2][prev_prev_tag]
     a = np.log(estimator.getQ(prev_prev_tag, prev_tag, tag))
-    b = -np.log(emission)
+    if emission is not None:
+        b = np.log(emission)
+    else:
+        emission = estimator.getE(word, tag)
+        if emission == 0:
+            b = -np.inf
+        else:
+            b = np.log(emission)
 
     return V + a + b
 
@@ -49,6 +56,7 @@ dic_label = {key: -np.inf for key in estimator.tag_unigram}
 dic_label_str = dic_label.copy()
 dic_label_str['STR'] = 0
 
+print datetime.now() - start
 
 for ind, sentence in enumerate(data[:10]):
     Viterbi = []
@@ -82,11 +90,11 @@ for ind, sentence in enumerate(data[:10]):
         Viterbi.append(word_dic)
         tags.append(tags_dic)
 
-    predict_last_tag = max(Viterbi[i].keys(), key=Viterbi[i].get)
-    sentence[i] = [sentence[i], predict_last_tag]
-    for j in xrange(i-1, 2, -1):
-        tag_j = tags[i - 2]
-    prev_prev, prev_tag = tags[i - 2][predict_last_tag]
+    #predict_last_tag = max(Viterbi[i].keys(), key=Viterbi[i].get)
+    #sentence[i] = [sentence[i], predict_last_tag]
+    #for j in xrange(i-1, 2, -1):
+     #   tag_j = tags[i - 2]
+    #prev_prev, prev_tag = tags[i - 2][predict_last_tag]
 
 
     #for j in range(len(sentence), 2, -1):
@@ -95,7 +103,7 @@ for ind, sentence in enumerate(data[:10]):
 
 
 
-
+'''
 
 good = 0.0
 total = 0.0
@@ -114,3 +122,4 @@ print "Accuracy : " + str(acc)
 zman = datetime.now() - start
 print(zman)
 
+'''
