@@ -60,7 +60,7 @@ class Estimator:
                 self.num_words += 1
                 self.tag_unigram[key] = int(value)
 
-    def unknown_signature(self, threshold_unk=0):
+    def unknown_signature(self):
         self.tag_unigram_events = self.tag_unigram.copy()
         for word, dic in self.word_tag.items():
             for tag, count in dic.items():
