@@ -11,6 +11,7 @@ signatures_regex = (["^0-9", re.compile('\d+\.\d+')],
                     ["^ent", re.compile("\w+ent$")],
                     ["^s", re.compile("\w+s$")],
                     ["^ly", re.compile("\w+ly$")],
+                    ["^al", re.compile("\w+al$")],
                     ["^A-Z", re.compile("[A-Z]+$")],
                     )
 
