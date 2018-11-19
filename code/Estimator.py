@@ -2,7 +2,7 @@ from utils import *
 import re
 
 # Dictionary that give a compiled regex for each signature
-signatures_regex = (["^0-9", re.compile('\d+\.\d+')],
+signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
                     ["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
                     ["^ion", re.compile("\w+ion$")],
@@ -59,7 +59,7 @@ class Estimator:
                 self.tag_unigram[key] = int(value)
 
     def unknown_signature(self, threshold_unk=0):
-        self.tag_unigram_events = self.tag_unigram
+        self.tag_unigram_events = self.tag_unigram.copy()
         for word, dic in self.word_tag.items():
             for tag, count in dic.items():
                 sign = replace_signature(word)
@@ -67,7 +67,7 @@ class Estimator:
                     self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + 1
                     if sign not in self.word_tag:
                         self.word_tag[sign] = {}
-                    self.word_tag[sign][tag] = self.word_tag.get(sign + " " + tag, 0) + count
+                    self.word_tag[sign][tag] = self.word_tag[sign].get(tag, 0) + count
 
     def get_best_tag(self, a, b, c):
         t1, t2 = a[1], b[1]
