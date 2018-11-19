@@ -3,6 +3,7 @@ import re
 
 # Dictionary that give a compiled regex for each signature
 signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
+                    ["^-", re.compile("\w+-\w+$")],
                     ["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
                     ["^ion", re.compile("\w+ion$")],
@@ -125,8 +126,6 @@ class Estimator:
             return float(self.word_tag[sign].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
 
         return float(self.word_tag["*UNK*"].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
-
-
 
     def qFile(self, ):
         data = []
