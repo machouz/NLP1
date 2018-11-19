@@ -1,9 +1,10 @@
 from utils import *
 from datetime import datetime
+from sys import argv
 
-features_file = "features"
-feature_vecs_file = "feature_vecs"
-feature_map_file = "feature_map"
+features_file = argv[1]
+feature_vecs_file = argv[2]
+feature_map_file = argv[3]
 
 feat2id = file_to_dic(feature_map_file)
 

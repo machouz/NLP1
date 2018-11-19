@@ -1,11 +1,12 @@
 from Estimator import *
 from datetime import datetime
+from sys import argv
 
 start = datetime.now()
 
-input_file = "../data/ass1-tagger-test-input"
-q_file = "q.mle"
-e_file = "e.mle"
+input_file = argv[1]
+q_file = argv[2]
+e_file = argv[3]
 
 data = []
 estimator = Estimator()

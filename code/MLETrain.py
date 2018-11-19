@@ -1,9 +1,12 @@
 from Estimator import *
 from datetime import datetime
+from sys import argv
 
 threshold_unk = 1
 
-fname = "../data/ass1-tagger-train"
+fname = argv[1]
+qMLE = argv[2]
+eMLE = argv[3]
 
 estimator = Estimator()
 file = read_data(fname)
@@ -42,8 +45,8 @@ def MLETrain():
 if __name__ == '__main__':
     start = datetime.now()
     MLETrain()
-    q_data = estimator.qFile()
-    e_data = estimator.eFile()
+    q_data = estimator.qFile(qMLE)
+    e_data = estimator.eFile(eMLE)
 
     end = datetime.now()
     zman = end - start

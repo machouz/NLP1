@@ -1,8 +1,13 @@
 from Estimator import *
 from datetime import datetime
 import numpy as np
+from sys import argv
 
 start = datetime.now()
+
+input_file = argv[1]
+q_file = argv[2]
+e_file = argv[3]
 
 input_file = "../data/ass1-tagger-test-input"
 q_file = "q.mle"
@@ -15,8 +20,6 @@ data = []
 estimator = Estimator()
 estimator.load_from_file(q_file, e_file)
 
-load_time = datetime.now() - start
-print(load_time)
 
 for line in file(input_file):
     arr = [['***', 'STR'], ['***', 'STR']] + line[:-1].split()
@@ -63,28 +66,24 @@ dic_label_str['STR'] = 0
 print datetime.now() - start
 
 for ind, sentence in enumerate(data[:10]):
-    Viterbi = []
+    Viterbi = [dic_label_str, dic_label_str]
     tags = []
 
     print ind
-    Viterbi.append(dic_label_str)
-    Viterbi.append(dic_label_str)
 
     for i in xrange(2, len(sentence)):
         tags_dic = dic_label.copy()
         word_dic = dic_label.copy()
-        possibilities_score = []
         word = sentence[i]
 
         for tag in word_dic:
             emission = estimator.getE(word, tag)
-            possibilities_score = []
             if emission > 0.0:
+                possibilities_score = []
                 for prev_prev_tag, prev_tag in possibles_bigrams:  # [tag]:
                     prob = getScore(word, i, tag, prev_tag, prev_prev_tag, emission)
                     possibilities_score.append([prob, prev_tag])
 
-            if len(possibilities_score) != 0:
                 score, prev_tag = max(possibilities_score)
                 word_dic[tag] = score
                 tags_dic[tag] = prev_tag

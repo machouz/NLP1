@@ -2,18 +2,19 @@ from utils import *
 import re
 
 # Dictionary that give a compiled regex for each signature
-signatures_regex = (["^0-9", re.compile('\w*\d+\w*')],
-                    ["^-", re.compile("\w+-\w+$")],
-                    ["^ed", re.compile("\w+ed$")],
+signatures_regex = (["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
                     ["^ion", re.compile("\w+ion$")],
                     ["^ity", re.compile("\w+ity$")],
                     ["^able", re.compile("\w+able$")],
                     ["^ent", re.compile("\w+ent$")],
+                    ["^'", re.compile("'\w+$")],
                     ["^s", re.compile("\w+s$")],
                     ["^ly", re.compile("\w+ly$")],
                     ["^al", re.compile("\w+al$")],
+                    ["^-", re.compile("\w+-\w+$")],
                     ["^A-Z", re.compile("[A-Z]+$")],
+                    ["^0-9", re.compile('\w*\d+\w*')],
                     )
 
 
@@ -127,7 +128,7 @@ class Estimator:
 
         return float(self.word_tag["*UNK*"].get(tag, 0)) / self.tag_unigram_events.get(tag, 1)
 
-    def qFile(self, ):
+    def qFile(self, fname):
         data = []
         for key, label in self.tag_unigram.items():
             data.append(key + "\t" + str(label))
@@ -135,13 +136,13 @@ class Estimator:
             data.append(key + "\t" + str(label))
         for key, label in self.tag_trigram.items():
             data.append(key + "\t" + str(label))
-        write_to_file("q.mle", data)
+        write_to_file(fname, data)
         return data
 
-    def eFile(self, ):
+    def eFile(self, fname):
         data = []
         for word, dic in self.word_tag.items():
             for tag, count in dic.items():
                 data.append(word + " " + tag + "\t" + str(count))
-        write_to_file("e.mle", data)
+        write_to_file(fname, data)
         return data

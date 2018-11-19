@@ -1,8 +1,9 @@
 from utils import *
 from datetime import datetime
+from sys import argv
 
-fname = "../data/ass1-tagger-train"
-output_file = "features"
+fname = argv[1]
+output_file = argv[2]
 
 
 def featureExtract(fname):
