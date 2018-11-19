@@ -16,6 +16,13 @@ def write_to_file(fname, data):
     np.savetxt(fname, data, fmt="%s", delimiter='\n')
 
 
+def dic_to_file(dic, fname):
+    data = []
+    for key, label in dic.items():
+        data.append(key + "\t" + str(label))
+    write_to_file(fname, data)
+
+
 def file_to_dic(fname):
     data = {}
     for line in file(fname):
