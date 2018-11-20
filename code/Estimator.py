@@ -4,6 +4,7 @@ import re
 # Dictionary that give a compiled regex for each signature
 signatures_regex = (["^ed", re.compile("\w+ed$")],
                     ["^ing", re.compile("\w+ing$")],
+                    ["^Aa", re.compile("[A-Z][a-z]+$")],
                     ["^ion", re.compile("\w+ion$")],
                     ["^ity", re.compile("\w+ity$")],
                     ["^able", re.compile("\w+able$")],
@@ -33,7 +34,7 @@ class Estimator:
     tag_unigram_events = {}
     word_tag = {}
 
-    def __init__(self, gamma1=0.1, gamma2=0.4, gamma3=0.5):
+    def __init__(self, gamma1=0.8, gamma2=0.15, gamma3=0.05):
         self.gamma1 = gamma1
         self.gamma2 = gamma2
         self.gamma3 = gamma3

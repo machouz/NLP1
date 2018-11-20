@@ -4,9 +4,14 @@ from sys import argv
 
 start = datetime.now()
 
-input_file = argv[1]
-q_file = argv[2]
-e_file = argv[3]
+
+#input_file = argv[1]
+#q_file = argv[2]
+#e_file = argv[3]
+
+input_file = "../data/ass1-tagger-test-input"
+q_file = "q.mle"
+e_file = "e.mle"
 
 data = []
 estimator = Estimator()
@@ -22,10 +27,10 @@ for sentence in data:
         t3 = estimator.get_best_tag(a, b, c)
         sentence[i] = [sentence[i], t3]
 
+
 good = 0.0
 total = 0.0
 labels = read_data("../data/ass1-tagger-test")
-
 
 
 error = []

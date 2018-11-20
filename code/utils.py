@@ -22,3 +22,19 @@ def file_to_dic(fname):
         key, label = line[:-1].split('\t')
         data[key] = int(label)
     return data
+
+
+def max_nested_dic(nested_dic):
+    maxi = 0.0
+    prev = ''
+    current = ''
+    for key1, val1 in nested_dic.items():
+
+        for key2, val2 in val1.items():
+            if val2 > maxi:
+                maxi = val2
+                prev = key1
+                current = key2
+
+
+    return prev, current
