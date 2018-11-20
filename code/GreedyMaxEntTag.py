@@ -63,6 +63,7 @@ print "Accuracy : " + str(acc)
 
 zman = datetime.now() - start
 print(zman)
+
 """
 runfile('/Users/machou/Documents/Machon Lev/Chana 5/Semestre 1/NLP/Ass1/code/ExtractFeatures.py', args='../data/ass1-tagger-train features', wdir='/Users/machou/Documents/Machon Lev/Chana 5/Semestre 1/NLP/Ass1/code')
 runfile('/Users/machou/Documents/Machon Lev/Chana 5/Semestre 1/NLP/Ass1/code/ConvertFeatures.py', args='features feature_vecs feature_map', wdir='/Users/machou/Documents/Machon Lev/Chana 5/Semestre 1/NLP/Ass1/code')
