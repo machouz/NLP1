@@ -7,17 +7,12 @@ output_file = argv[2]
 
 
 def featureExtract(fname):
-    train = read_data(fname)
+    text = read_data(fname)
     featured_data = []
-    for line in train:
+    for line in text:
         featured_line = []
-        first_word = line[0]
-        first_word_features = get_features(first_word[0], first_word[1])
-        featured_line.append(first_word_features)
-        for previous_word_tag, current_word_tag in zip(line, line[1:]):
-            features = get_features(current_word_tag[0], current_word_tag[1], previous_word_tag[0],
-                                    previous_word_tag[1])
-
+        for i in range(0, len(line)):
+            features = get_features(i, line)
             featured_line.append(features)
 
         featured_data.append(featured_line)
@@ -25,13 +20,41 @@ def featureExtract(fname):
     return featured_data
 
 
-def get_features(current_word, current_tag, previous_word=None, previous_tag=None):
+def get_features(index, line):
     features = {}
+
+    if len(line[index]) == 2:  # Train
+        current_word, current_tag = line[index]
+        features["current_tag"] = current_tag
+    else:  # Test
+        current_word = line[index]
+
+    previous_word, previous_tag = line[index - 1]
+    pre_previous_word, pre_previous_tag = line[index - 2]
     features["current_word"] = current_word
-    features["current_tag"] = current_tag
-    features["suffix"] = current_word[-3:]
+    if len(current_word) >= 1:
+        features["suffix1"] = current_word[-1]
+        features["prefix1"] = current_word[0]
+
+    if len(current_word) >= 2:
+        features["suffix2"] = current_word[-2]
+        features["prefix2"] = current_word[1]
+
+    if len(current_word) >= 3:
+        features["suffix3"] = current_word[-3]
+        features["prefix3"] = current_word[2]
+
+    if previous_word is not None:
+        features["previous_word"] = previous_word
+
     if previous_tag is not None:
         features["previous_tag"] = previous_tag
+
+    if pre_previous_word is not None:
+        features["pre_previous_word"] = pre_previous_word
+
+    if pre_previous_tag is not None:
+        features["pre_previous_tag"] = pre_previous_tag
     return features
 
 
