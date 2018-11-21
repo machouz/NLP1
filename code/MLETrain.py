@@ -4,20 +4,15 @@ from sys import argv
 
 threshold_unk = 1
 
-#fname = argv[1]
-#qMLE = argv[2]
-#eMLE = argv[3]
+fname = argv[1]
+qMLE = argv[2]
+eMLE = argv[3]
 
-
-fname = "../data/ass1-tagger-train"
-qMLE = "q.mle"
-eMLE = "e.mle"
 
 estimator = Estimator()
 file = read_data(fname)
 train = file[:int(len(file) * 0.9)]
 dev = file[len(train):]
-
 
 
 def MLETrain():
