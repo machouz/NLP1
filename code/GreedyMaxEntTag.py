@@ -37,7 +37,6 @@ for line in file(input_file):
     data.append(arr)
 for sentence in data[:10]:
     for i in range(2, len(sentence)):
-        current_word, previous_word_tag, prev_previous_word_tag = sentence[i], sentence[i - 1], sentence[i - 2]
         features_dic = get_features(i, sentence)
         features_vec = feature_convert(features_dic)
         tag_index = model.predict([features_vec])

@@ -7,7 +7,7 @@ feature_vecs_file = argv[1]
 model_file = argv[2]
 
 X_train, Y_train = load_svmlight_file(feature_vecs_file)
-model = LogisticRegression()
+model = LogisticRegression(solver="liblinear", verbose=1, penalty="l2")
 model.fit(X_train, Y_train)
 # save the model to disk
 pickle.dump(model, open(model_file, 'wb'))
