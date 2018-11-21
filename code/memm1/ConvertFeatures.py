@@ -16,6 +16,8 @@ def featureConvert(fname):
         if line[0] not in features_id:
             features_id[line[0]] = i
             i += 1
+    for line in file(fname):
+        line = line[:-1].split("\t")
         label = features_id[line[0]]
         features = []
         for feature in line[1:]:

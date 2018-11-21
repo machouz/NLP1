@@ -17,7 +17,7 @@ print(datetime.now() - start)
 
 features2id = file_to_dic(feature_map_file)
 id2features = {v: k for k, v in features2id.iteritems()}
-zero_features_vector = np.zeros(max(features2id.values()))
+zero_features_vector = np.zeros(max(features2id.values()) + 1)
 
 
 def feature_convert(features_dic):
@@ -39,6 +39,7 @@ for sentence in data[:10]:
     for i in range(2, len(sentence)):
         features_dic = get_features(i, sentence)
         features_vec = feature_convert(features_dic)
+        print features_vec
         tag_index = model.predict([features_vec])
         current_tag = id2features[tag_index[0]]
         sentence[i] = [sentence[i], current_tag]
