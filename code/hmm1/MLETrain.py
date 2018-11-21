@@ -1,4 +1,4 @@
-from Estimator import *
+from code.Estimator import *
 from datetime import datetime
 from sys import argv
 

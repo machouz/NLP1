@@ -1,7 +1,7 @@
 from datetime import datetime
-from ExtractFeatures import get_features
+from code.memm1.ExtractFeatures import get_features
 from sys import argv
-from utils import *
+from code.utils import *
 import numpy as np
 import pickle
 

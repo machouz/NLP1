@@ -1,4 +1,4 @@
-from utils import *
+from code.utils import *
 from datetime import datetime
 from sys import argv
 

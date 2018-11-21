@@ -1,11 +1,10 @@
-from utils import *
+from code.utils import *
 from datetime import datetime
 from sys import argv
 
 features_file = argv[1]
 feature_vecs_file = argv[2]
 feature_map_file = argv[3]
-
 
 
 def featureConvert(fname):
