@@ -9,10 +9,11 @@ signatures_regex = (["^ed", re.compile("\w+ed$")],
                     ["^able", re.compile("\w+able$")],
                     ["^ent", re.compile("\w+ent$")],
                     ["^'", re.compile("'\w+$")],
-                    ["^s", re.compile("\w+s$")],
                     ["^ly", re.compile("\w+ly$")],
                     ["^al", re.compile("\w+al$")],
+                    ["^Aa", re.compile("[A-Z][a-z]+$")],
                     ["^-", re.compile("\w+-\w+$")],
+                    ["^s", re.compile("\w+s$")],
                     ["^A-Z", re.compile("[A-Z]+$")],
                     ["^0-9", re.compile('\w*\d+\w*')],
                     )
@@ -33,7 +34,7 @@ class Estimator:
     tag_unigram_events = {}
     word_tag = {}
 
-    def __init__(self, gamma1=0.1, gamma2=0.4, gamma3=0.5):
+    def __init__(self, gamma1=0.8, gamma2=0.15, gamma3=0.05):
         self.gamma1 = gamma1
         self.gamma2 = gamma2
         self.gamma3 = gamma3
@@ -44,7 +45,7 @@ class Estimator:
         for line in file(e_file):
             key, count = line[:-1].split('\t')
             word, tag = key.split(" ")
-            self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + 1
+            self.tag_unigram_events[tag] = self.tag_unigram_events.get(tag, 0) + int(count)
             if word not in self.word_tag:
                 self.word_tag[word] = {}
             self.word_tag[word][tag] = int(count)
@@ -58,7 +59,7 @@ class Estimator:
             elif len(gram) == 2:
                 self.tag_bigram[key] = int(value)
             else:
-                self.num_words += 1
+                self.num_words += int(value)
                 self.tag_unigram[key] = int(value)
 
     def unknown_signature(self):

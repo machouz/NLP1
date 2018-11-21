@@ -15,13 +15,11 @@ def read_data(fname):
 def write_to_file(fname, data):
     np.savetxt(fname, data, fmt="%s", delimiter='\n')
 
-
 def dic_to_file(dic, fname):
     data = []
     for key, label in dic.items():
         data.append(key + "\t" + str(label))
     write_to_file(fname, data)
-
 
 def file_to_dic(fname):
     data = {}
@@ -29,3 +27,17 @@ def file_to_dic(fname):
         key, label = line[:-1].split('\t')
         data[key] = int(label)
     return data
+
+
+def max_nested_dic(nested_dic):
+    maxi = -np.inf
+    prev = ''
+    current = ''
+    for key1, val1 in nested_dic.items():
+        for key2, val2 in val1.items():
+            if val2 > maxi:
+                maxi = val2
+                prev = key1
+                current = key2
+    return prev, current
+

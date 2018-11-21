@@ -8,11 +8,11 @@ fname = argv[1]
 qMLE = argv[2]
 eMLE = argv[3]
 
+
 estimator = Estimator()
 file = read_data(fname)
 train = file[:int(len(file) * 0.9)]
 dev = file[len(train):]
-
 
 
 def MLETrain():
