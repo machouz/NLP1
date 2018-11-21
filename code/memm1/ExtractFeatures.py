@@ -11,7 +11,7 @@ def featureExtract(fname):
     featured_data = []
     for line in text:
         featured_line = []
-        for i in range(0, len(line)):
+        for i in range(2, len(line)):
             features = get_features(i, line)
             featured_line.append(features)
 
@@ -31,18 +31,8 @@ def get_features(index, line):
 
     previous_word, previous_tag = line[index - 1]
     pre_previous_word, pre_previous_tag = line[index - 2]
+
     features["current_word"] = current_word
-    if len(current_word) >= 1:
-        features["suffix1"] = current_word[-1]
-        features["prefix1"] = current_word[0]
-
-    if len(current_word) >= 2:
-        features["suffix2"] = current_word[-2]
-        features["prefix2"] = current_word[1]
-
-    if len(current_word) >= 3:
-        features["suffix3"] = current_word[-3]
-        features["prefix3"] = current_word[2]
 
     if previous_word is not None:
         features["previous_word"] = previous_word
@@ -63,6 +53,7 @@ def write_features_file(featured_data, output_file):
     for line in featured_data:
         for featured_word in line:
             label = featured_word['current_tag']
+            del featured_word['current_tag']
             for key, value in featured_word.items():
                 label += "\t" + key + "=" + value
             data.append(label)
