@@ -21,7 +21,7 @@ print(datetime.now() - start)
 
 features2id = file_to_dic(feature_map_file)
 id2features = {v: k for k, v in features2id.iteritems()}
-zero_features_vector = np.zeros(215472)
+zero_features_vector = np.zeros(max(features2id.values()))
 
 
 def feature_convert(features_dic):
