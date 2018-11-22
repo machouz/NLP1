@@ -1,6 +1,9 @@
-from ass1.utils import *
 from datetime import datetime
 from sys import argv
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
+from ass1.Estimator import *
 
 features_file = argv[1]
 feature_vecs_file = argv[2]

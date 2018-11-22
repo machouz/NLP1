@@ -1,15 +1,19 @@
 from datetime import datetime
 from sys import argv
-from ass1.utils import *
 import numpy as np
 import pickle
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
+from ass1.Estimator import *
 
 # ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map
 start = datetime.now()
+
 input_file = argv[1]
 model_file = argv[2]
 feature_map_file = argv[3]
-# out_file_name = argv[4]
+out_file_name = argv[4]
 
 model = pickle.load(open(model_file, 'rb'))
 
@@ -68,3 +72,16 @@ for sentence in data:
         current_tag = id2features[tag_index[0]]
         sentence[i] = [sentence[i], current_tag]
 
+output = []
+for line in data:
+    str = ''
+    for word, tag in line[2:]:
+        str += word + '/' + tag + ' '
+    output.append(str[:-1])
+
+
+write_to_file(out_file_name, output)
+
+print(datetime.now() - start)
+
+print "Greedy hmm"
