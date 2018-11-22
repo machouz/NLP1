@@ -13,7 +13,7 @@ start = datetime.now()
 input_file = argv[1]
 model_file = argv[2]
 feature_map_file = argv[3]
-#out_file_name = argv[4]
+out_file_name = argv[4]
 
 model = pickle.load(open(model_file, 'rb'))
 
@@ -32,6 +32,30 @@ def feature_convert(features_dic):
             features_vec[feature - 1] = 1
     return features_vec
 
+def getFeatures(index, line):
+    features = {}
+    current_word = line[index]
+    features["current_word"] = current_word
+
+    if index > 0:
+        previous_word, previous_tag = line[index - 1]
+        features["previous_word"] = previous_word
+        features["previous_tag"] = previous_tag
+
+    if index > 1:
+        pre_previous_word, pre_previous_tag = line[index - 2]
+        features["pre_previous_tag"] = pre_previous_tag
+        features["pre_previous_word"] = pre_previous_word
+
+    if len(line) > index + 1:
+        next_word = line[index + 1][0]
+        features["next_word"] = next_word
+
+    if len(line) > index + 2:
+        next_next_word = line[index + 2][0]
+        features["next_next_word"] = next_next_word
+
+    return features
 
 def get_features(current_word, pre_previous_tag, pre_previous_word, previous_tag, previous_word, next_word=None,
                  next_next_word=None):
@@ -106,10 +130,12 @@ for ind, sentence in enumerate(data):
 
     sentence[-1] = [sentence[-1], last]
 
-    for j in range(len(sentence) - 3, 1, -1):
-        j_tag = tags[j][last]
-        sentence[j] = [sentence[j], j_tag]
-        last = j_tag
+    for i in range(2, len(sentence)):
+        features_dic = getFeatures(i, sentence)
+        features_vec = feature_convert(features_dic)
+        tag_index = model.predict([features_vec])
+        current_tag = id2features[tag_index[0]]
+        sentence[i] = [sentence[i], current_tag]
 
 output = []
 for line in data:
