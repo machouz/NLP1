@@ -30,6 +30,7 @@ def prep():
     return [[tag1, tag2] for tag1 in estimator.tag_unigram for tag2 in estimator.tag_unigram]
 
 
+
 def getScore(word, index, tag, prev_tag, prev_prev_tag, emission=None):
     V = Viterbi[index - 1][prev_prev_tag][prev_tag]
     a = np.log(estimator.getQ(prev_prev_tag, prev_tag, tag))
