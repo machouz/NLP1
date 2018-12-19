@@ -2,8 +2,7 @@ from datetime import datetime
 from sys import argv
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
-from ass1.Estimator import *
+from utils import *
 
 
 fname = argv[1]

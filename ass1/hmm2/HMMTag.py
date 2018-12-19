@@ -4,8 +4,7 @@ import copy
 from sys import argv
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
-from ass1.Estimator import *
+from Estimator import *
 
 start = datetime.now()
 

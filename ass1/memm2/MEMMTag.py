@@ -4,8 +4,7 @@ import numpy as np
 import pickle
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
-from ass1.utils import *
+from utils import *
 
 
 # ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map
