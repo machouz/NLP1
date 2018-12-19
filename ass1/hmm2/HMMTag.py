@@ -5,6 +5,7 @@ from sys import argv
 import os
 import sys
 from Estimator import *
+import multiprocessing
 
 start = datetime.now()
 
@@ -65,6 +66,8 @@ possible_previous_tag = find_possible_previous_tag()
 
 print datetime.now() - start
 
+manager = multiprocessing.Manager()
+pool = multiprocessing.Pool(processes=4)
 
 for ind, sentence in enumerate(data):
     Viterbi = [copy.deepcopy(dic_label_str), copy.deepcopy(dic_label_str)]
@@ -80,12 +83,15 @@ for ind, sentence in enumerate(data):
 
         for r in estimator.tag_unigram: #current
             emission = estimator.getE(word, r)
+
             if emission > 1E-6:
                 for t in possible_previous_tag[r]: #prev
                     possibilities_score = []
                     score = -np.inf
                     prev_prev = ""
+
                     for t_tag in possible_previous_tag[t]:  # prev_prev
+                        #pool.apply(getScore,)
                         prob = getScore(word, i, r, t, t_tag, emission)
                         #possibilities_score.append([prob, t_tag])
                         if prob > score:

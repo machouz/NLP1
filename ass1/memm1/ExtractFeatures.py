@@ -31,21 +31,21 @@ def get_features(index, line):
 
     if index > 0:
         previous_word, previous_tag = line[index - 1]
-        features["previous_word"] = previous_word
+        #features["previous_word"] = previous_word
         features["previous_tag"] = previous_tag
 
     if index > 1:
         pre_previous_word, pre_previous_tag = line[index - 2]
         features["pre_previous_tag"] = pre_previous_tag
-        features["pre_previous_word"] = pre_previous_word
+        #features["pre_previous_word"] = pre_previous_word
 
     if len(line) > index + 1:
         next_word = line[index + 1][0]
-        features["next_word"] = next_word
+        #features["next_word"] = next_word
 
     if len(line) > index + 2:
         next_next_word = line[index + 2][0]
-        features["next_next_word"] = next_next_word
+        #features["next_next_word"] = next_next_word
 
     return features
 
