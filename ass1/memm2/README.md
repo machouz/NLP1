@@ -15,7 +15,3 @@ Packages:
 sklearn, pickle, scipy
 
 python ass1/memm1/TrainSolver.py ass1/memm1/feature_vecs_file ass1/memm1/model
-
-
-
-

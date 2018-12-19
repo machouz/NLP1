@@ -81,7 +81,7 @@ for ind, sentence in enumerate(data):
 
         for r in estimator.tag_unigram: #current
             emission = estimator.getE(word, r)
-            if emission > 1E-6:
+            if emission > 0.0:
                 for t in possible_previous_tag[r]: #prev
                     possibilities_score = []
 
