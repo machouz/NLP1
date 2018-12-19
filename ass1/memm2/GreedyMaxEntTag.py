@@ -4,10 +4,10 @@ import numpy as np
 import pickle
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
+sys.path.append('./')
 #from ass1.Estimator import *
-
-# ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map
+from utils import *
+# ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map test_output
 start = datetime.now()
 
 input_file = argv[1]
