@@ -35,7 +35,8 @@ def find_possible_previous_tag():
         possible_tags[tag] = []
     for bigram, number in estimator.tag_bigram.items():
         label1, label2 = bigram.split(' ')
-        possible_tags[label2].append(label1)
+        if number > 2:
+            possible_tags[label2].append(label1)
 
     return possible_tags
 
@@ -81,7 +82,7 @@ for ind, sentence in enumerate(data):
 
         for r in estimator.tag_unigram: #current
             emission = estimator.getE(word, r)
-            if emission > 0.0:
+            if emission > 1E-6:
                 for t in possible_previous_tag[r]: #prev
                     possibilities_score = []
 
