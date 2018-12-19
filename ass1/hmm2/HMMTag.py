@@ -2,7 +2,6 @@ from datetime import datetime
 import numpy as np
 import copy
 from sys import argv
-
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
@@ -30,6 +29,15 @@ def prep():
     return [[tag1, tag2] for tag1 in estimator.tag_unigram for tag2 in estimator.tag_unigram]
 
 
+def find_possible_previous_tag():
+    possible_tags = {}
+    for tag in estimator.tag_unigram:
+        possible_tags[tag] = []
+    for bigram, number in estimator.tag_bigram.items():
+        label1, label2 = bigram.split(' ')
+        possible_tags[label2].append(label1)
+
+    return possible_tags
 
 def getScore(word, index, tag, prev_tag, prev_prev_tag, emission=None):
     V = Viterbi[index - 1][prev_prev_tag][prev_tag]
@@ -53,7 +61,11 @@ dic_label = {key1: {key2: -np.inf for key2 in estimator.tag_unigram} for key1 in
 dic_label_str = copy.deepcopy(dic_label)
 dic_label_str['STR']['STR'] = 0
 
+
+possible_previous_tag = find_possible_previous_tag()
+
 print datetime.now() - start
+
 
 for ind, sentence in enumerate(data):
     Viterbi = [copy.deepcopy(dic_label_str), copy.deepcopy(dic_label_str)]
@@ -69,11 +81,11 @@ for ind, sentence in enumerate(data):
 
         for r in estimator.tag_unigram: #current
             emission = estimator.getE(word, r)
-            if emission > 0.0:
-                for t in estimator.tag_unigram: #prev
+            if emission > 1E-6:
+                for t in possible_previous_tag[r]: #prev
                     possibilities_score = []
 
-                    for t_tag in estimator.tag_unigram:  # prev_prev
+                    for t_tag in possible_previous_tag[t]:  # prev_prev
                         prob = getScore(word, i, r, t, t_tag, emission)
                         possibilities_score.append([prob, t_tag])
 
