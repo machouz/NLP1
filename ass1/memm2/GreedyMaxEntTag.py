@@ -5,7 +5,7 @@ import pickle
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
-from ass1.Estimator import *
+#from ass1.Estimator import *
 
 # ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map
 start = datetime.now()
