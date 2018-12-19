@@ -64,7 +64,8 @@ data = []
 for line in file(input_file):
     arr = [['***', 'STR'], ['***', 'STR']] + line[:-1].split(" ")
     data.append(arr)
-for sentence in data:
+for j, sentence in enumerate(data):
+    print j
     for i in range(2, len(sentence)):
         features_dic = get_features(i, sentence)
         features_vec = feature_convert(features_dic)
