@@ -1,11 +1,13 @@
+import multiprocessing
 from datetime import datetime
 from sys import argv
 import numpy as np
 import pickle
 import sys
 import os
-#from ass1.Estimator import *
+# from ass1.Estimator import *
 from utils import *
+
 # ../data/ass1-tagger-test-input ./memm1/model ./memm1/feature_map test_output
 start = datetime.now()
 
@@ -39,21 +41,21 @@ def get_features(index, line):
 
     if index > 0:
         previous_word, previous_tag = line[index - 1]
-        #features["previous_word"] = previous_word
+        # features["previous_word"] = previous_word
         features["previous_tag"] = previous_tag
 
     if index > 1:
         pre_previous_word, pre_previous_tag = line[index - 2]
         features["pre_previous_tag"] = pre_previous_tag
-        #features["pre_previous_word"] = pre_previous_word
+        # features["pre_previous_word"] = pre_previous_word
 
     if len(line) > index + 1:
         next_word = line[index + 1][0]
-        #features["next_word"] = next_word
+        # features["next_word"] = next_word
 
     if len(line) > index + 2:
         next_next_word = line[index + 2][0]
-        #features["next_next_word"] = next_next_word
+        # features["next_next_word"] = next_next_word
 
     return features
 
@@ -63,14 +65,26 @@ data = []
 for line in file(input_file):
     arr = [['***', 'STR'], ['***', 'STR']] + line[:-1].split(" ")
     data.append(arr)
-for j, sentence in enumerate(data):
-    print j
+
+
+def func(sentence):
+    i, sentence = sentence
+    print i
     for i in range(2, len(sentence)):
         features_dic = get_features(i, sentence)
         features_vec = feature_convert(features_dic)
         tag_index = model.predict([features_vec])
         current_tag = id2features[tag_index[0]]
         sentence[i] = [sentence[i], current_tag]
+    return sentence
+
+
+pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+multiple_results = list(pool.map(func, enumerate(data)))
+pool.close()
+pool.join()
+
+data = multiple_results
 
 output = []
 for line in data:
@@ -78,7 +92,6 @@ for line in data:
     for word, tag in line[2:]:
         str += word + '/' + tag + ' '
     output.append(str[:-1])
-
 
 write_to_file(out_file_name, output)
 
